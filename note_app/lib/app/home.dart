@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:note_app/app/components/cardnote.dart';
 import 'package:note_app/app/components/crud.dart';
+import 'package:note_app/app/notes/edit.dart';
 import 'package:note_app/constant/linkapi.dart';
 import 'package:note_app/main.dart';
 
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         title: Text(
-          "Home",
+          "Note App",
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
@@ -43,39 +44,92 @@ class _HomeState extends State<Home> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).pushNamed("addnote");
+        },
         child: Icon(Icons.add),
       ),
-      body: FutureBuilder(
-        future: getNotes(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: Text("Loading ... "),
-            );
-          } else if (snapshot.hasData && snapshot.data != null) {
-            if (snapshot.data['status'] == 'success') {
-              List notes = snapshot.data['data'];
-              return ListView.builder(
-                itemCount: notes.length,
-                itemBuilder: (context, i) {
-                  return Cardnote(
-                    titlenote: notes[i]['notes_title'],
-                    contentnote: notes[i]['notes_content'],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              "Your Notes",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: getNotes(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
-                },
-              );
-            } else {
-              return Center(
-                child: Text("Failed to load notes"),
-              );
-            }
-          } else {
-            return Center(
-              child: Text("No data available"),
-            );
-          }
-        },
+                } else if (snapshot.hasData && snapshot.data != null) {
+                  if (snapshot.data['status'] == 'success') {
+                    List notes = snapshot.data['data'];
+                    return ListView.builder(
+                      itemCount: notes.length,
+                      itemBuilder: (context, i) {
+                        return Cardnote(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => Edit(
+                                note: snapshot.data['data'][i],
+                              ),
+                            ));
+                          },
+                          titlenote: notes[i]['notes_title'],
+                          contentnote: notes[i]['notes_content'],
+                        );
+                      },
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        "There are no notes",
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }
+                } else {
+                  return Center(
+                    child: Text("No data available"),
+                  );
+                }
+              },
+            ),
+          ),
+          Container(
+            height: 100,
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed("home");
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.person),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed("Homeprofile");
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

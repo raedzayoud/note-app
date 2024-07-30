@@ -1,4 +1,4 @@
-const String linkServeurName = "http://192.168.35.198/coursephp";
+const String linkServeurName = "http://192.168.48.198/coursephp";
 const String linkSignup = "$linkServeurName/auth/signup.php";
 const String linkLogin = "$linkServeurName/auth/login.php";
 //10.0.2.2

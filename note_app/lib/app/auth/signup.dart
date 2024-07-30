@@ -44,83 +44,87 @@ class _Signup extends State<Signup> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : ListView(
-              children: [
-                Form(
-                    key: _form,
-                    child: Column(
-                      children: [
-                        Container(
-                            margin: EdgeInsets.only(top: 40),
-                            child: Text(
-                              "Welcome Back \n       Sign up ",
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 29),
-                            )),
-                        SizedBox(
-                          height: 80,
-                        ),
-                        CustomTextField(
+          : Container(
+            color: Colors.white,
+            child: ListView(
+                children: [
+                  Form(
+                      key: _form,
+                      child: Column(
+                        children: [
+                          Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: Text(
+                                "Create your own Account  ",
+                                style:
+                                    TextStyle(color: Colors.blue, fontSize: 27),
+                              )),
+                          Transform.scale(
+                            child: Image.asset("images/notes.jpg"),
+                            scale: 0.8,
+                          ),
+                          CustomTextField(
+                              valid: (val) {
+                                return validInput(val!, 3, 20);
+                              },
+                              hint: "Entrer Your Username",
+                              controller: username),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          CustomTextField(
+                              valid: (val) {
+                                return validInput(val!, 3, 20);
+                              },
+                              hint: "Entrer Your Email",
+                              controller: email),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          CustomTextField(
                             valid: (val) {
                               return validInput(val!, 3, 20);
                             },
-                            hint: "Entrer Your Username",
-                            controller: username),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        CustomTextField(
-                            valid: (val) {
-                              return validInput(val!, 3, 20);
-                            },
-                            hint: "Entrer Your Email",
-                            controller: email),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        CustomTextField(
-                          valid: (val) {
-                            return validInput(val!, 3, 20);
-                          },
-                          hint: "Entrer Your Password",
-                          controller: password,
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          //argin: EdgeInsets.only(top: 90),
-                          child: MaterialButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 100, vertical: 10),
-                            onPressed: () async {
-                              await sigup();
-                            },
-                            child:
-                                Text("Sign Up", style: TextStyle(fontSize: 20)),
-                            color: Colors.blue,
-                            textColor: Colors.white,
+                            hint: "Entrer Your Password",
+                            controller: password,
                           ),
-                        ),
-                        Container(
-                          //argin: EdgeInsets.only(top: 90),
-                          child: MaterialButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 90, vertical: 10),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushReplacementNamed("login");
-                            },
-                            child:
-                                Text("Login", style: TextStyle(fontSize: 20)),
-                            //color: Colors.blue,
-                            // textColor: Colors.white,
+                          SizedBox(
+                            height: 20,
                           ),
-                        )
-                      ],
-                    ))
-              ],
-            ),
+                          Container(
+                            //argin: EdgeInsets.only(top: 90),
+                            child: MaterialButton(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 100, vertical: 10),
+                              onPressed: () async {
+                                await sigup();
+                              },
+                              child:
+                                  Text("Sign Up", style: TextStyle(fontSize: 20)),
+                              color: Colors.blue,
+                              textColor: Colors.white,
+                            ),
+                          ),
+                          Container(
+                            //argin: EdgeInsets.only(top: 90),
+                            child: MaterialButton(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 90, vertical: 10),
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .pushReplacementNamed("login");
+                              },
+                              child:
+                                  Text("Login", style: TextStyle(fontSize: 20)),
+                              //color: Colors.blue,
+                              // textColor: Colors.white,
+                            ),
+                          )
+                        ],
+                      ))
+                ],
+              ),
+          ),
     );
   }
 }

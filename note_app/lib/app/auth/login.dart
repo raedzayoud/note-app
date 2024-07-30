@@ -13,7 +13,7 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  Login() async {
+  Future<void> login() async {
     if (_form.currentState!.validate()) {
       isLoading = true;
       setState(() {});
@@ -32,7 +32,7 @@ class _LoginState extends State<Login> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                'there is a problem ! if you don t have an account create it '),
+                'There is a problem! If you don\'t have an account, create it.'),
             duration: Duration(seconds: 2),
           ),
         );
@@ -45,80 +45,74 @@ class _LoginState extends State<Login> {
   GlobalKey<FormState> _form = GlobalKey();
   bool isLoading = false;
   Crud c = Crud();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: isLoading == true
+      body: isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : ListView(
-              children: [
-                Form(
+          : Container(
+              color: Colors.white,
+              child: ListView(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: Text(
+                      "Welcome back to our App",
+                      style: TextStyle(color: Colors.blue, fontSize: 25),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Transform.scale(
+                    child: Image.asset("images/notes.jpg"),
+                    scale: 0.8,
+                  ),
+                  Form(
                     key: _form,
                     child: Column(
                       children: [
-                        Container(
-                            margin: EdgeInsets.only(top: 40),
-                            child: Text(
-                              "Welcome Back",
-                              style:
-                                  TextStyle(color: Colors.blue, fontSize: 29),
-                            )),
-                        SizedBox(
-                          height: 80,
-                        ),
                         CustomTextField(
-                            valid: (val) {
-                              return validInput(val!, 3, 20);
-                            },
-                            hint: "Entrer Your Email",
-                            controller: email),
-                        SizedBox(
-                          height: 20,
+                          valid: (val) => validInput(val!, 3, 20),
+                          hint: "Enter Your Email",
+                          controller: email,
                         ),
+                        SizedBox(height: 20),
                         CustomTextField(
-                          hint: "Entrer Your Password",
-                          valid: (val) {
-                            return validInput(val!, 3, 20);
-                          },
+                          hint: "Enter Your Password",
+                          valid: (val) => validInput(val!, 3, 20),
                           controller: password,
                         ),
-                       SizedBox(height: 20),
-                        Container(
-                          //argin: EdgeInsets.only(top: 90),
-                          child: MaterialButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 100, vertical: 10),
-                            onPressed: () async {
-                              await Login();
-                            },
-                            child: Text(
-                              "Login",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            color: Colors.blue,
-                            textColor: Colors.white,
+                        SizedBox(height: 20),
+                        MaterialButton(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 100, vertical: 10),
+                          onPressed: login,
+                          child: Text(
+                            "Login",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          color: Colors.blue,
+                          textColor: Colors.white,
+                        ),
+                        SizedBox(height: 10),
+                        MaterialButton(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 90, vertical: 10),
+                          onPressed: () {
+                            Navigator.of(context).pushReplacementNamed("signup");
+                          },
+                          child: Text(
+                            "Sign Up",
+                            style: TextStyle(fontSize: 20),
                           ),
                         ),
-                        Container(
-                          //argin: EdgeInsets.only(top: 90),
-                          child: MaterialButton(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 90, vertical: 10),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushReplacementNamed("signup");
-                            },
-                            child:
-                                Text("Sign Up", style: TextStyle(fontSize: 20)),
-                            //color: Colors.blue,
-                            // textColor: Colors.white,
-                          ),
-                        )
                       ],
-                    ))
-              ],
+                    ),
+                  ),
+                ],
+              ),
             ),
     );
   }
