@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/app/model/notemodel.dart';
+import 'package:note_app/constant/linkapi.dart';
 
 class Cardnote extends StatelessWidget {
-  final String titlenote;
-  final String contentnote;
-  final void Function()?onTap;
-  const Cardnote({super.key, required this.titlenote, required this.contentnote, this.onTap});
+  final Data note;
+  final void Function()? onTap;
+  final void Function()? onPressed;
+
+  const Cardnote({
+    super.key,
+    required this.note,
+    this.onTap,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,24 +21,27 @@ class Cardnote extends StatelessWidget {
       child: Card(
         color: Colors.white,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              child: Expanded(
-                child: Transform.scale(
-                    scale: 0.9,
-                    child: Image.asset(
-                      "images/note.jpg",
-                      width: 200,
-                      height: 150,
-                      fit: BoxFit.fill,
-                    )),
+              width: 100,
+              margin: EdgeInsets.only(right: 2),
+              child: Transform.scale(
+                scale: 0.8,
+                child: Image.network(
+                  "$linkImageRoot/${note.notesImage}",
+                  width: 140,
+                  height: 150,
+                ),
               ),
             ),
             Expanded(
               child: ListTile(
-                title: Text("${titlenote}"),
-                subtitle: Text("${contentnote}"),
+                trailing: IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: onPressed,
+                ),
+                title: Text(note.notesTitle ?? ''),
+                subtitle: Text(note.notesContent ?? ''),
               ),
             ),
           ],

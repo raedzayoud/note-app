@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:note_app/app/components/cardnote.dart';
 import 'package:note_app/app/components/crud.dart';
+import 'package:note_app/app/model/notemodel.dart';
 import 'package:note_app/app/notes/edit.dart';
 import 'package:note_app/constant/linkapi.dart';
 import 'package:note_app/main.dart';
@@ -16,7 +18,6 @@ class _HomeState extends State<Home> {
   final Crud c = Crud();
 
   Future<dynamic> getNotes() async {
-    print(sharedPreferences.getString("id"));
     var response = await c.PostRequest(linkview, {
       "id": sharedPreferences.getString("id") ?? "",
     });
@@ -43,24 +44,8 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).pushNamed("addnote");
-        },
-        child: Icon(Icons.add),
-      ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              "Your Notes",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
           Expanded(
             child: FutureBuilder(
               future: getNotes(),
@@ -76,16 +61,24 @@ class _HomeState extends State<Home> {
                       itemCount: notes.length,
                       itemBuilder: (context, i) {
                         return Cardnote(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => Edit(
-                                note: snapshot.data['data'][i],
-                              ),
-                            ));
-                          },
-                          titlenote: notes[i]['notes_title'],
-                          contentnote: notes[i]['notes_content'],
-                        );
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => Edit(
+                                  note: snapshot.data['data'][i],
+                                ),
+                              ));
+                            },
+                            note: Data.fromJson(notes[i]),
+                            onPressed: () async {
+                              var response = await c.PostRequest(linkdelete, {
+                                "id": notes[i]['notes_id'].toString(),
+                                 "imagename":notes[i]['notes_image'].toString()
+                              });
+                              if (response['status'] == 'success') {
+                                Navigator.of(context)
+                                    .pushReplacementNamed("home");
+                              }
+                            });
                       },
                     );
                   } else {
@@ -123,7 +116,13 @@ class _HomeState extends State<Home> {
                 IconButton(
                   icon: Icon(Icons.person),
                   onPressed: () {
-                    Navigator.of(context).pushReplacementNamed("Homeprofile");
+                    Navigator.of(context).pushNamed("Homeprofile");
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed("addnote");
                   },
                 ),
               ],
