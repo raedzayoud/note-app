@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
                 IconButton(
                   icon: Icon(Icons.person),
                   onPressed: () {
-                    Navigator.of(context).pushNamed("Homeprofile");
+                    Navigator.of(context).pushReplacementNamed("Homeprofile");
                   },
                 ),
                 IconButton(

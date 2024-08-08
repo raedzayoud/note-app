@@ -27,6 +27,10 @@ class _LoginState extends State<Login> {
         sharedPreferences.setString("id", response['data']['id'].toString());
         sharedPreferences.setString("username", response['data']['username']);
         sharedPreferences.setString("email", response['data']['email']);
+        sharedPreferences.setString("age", response['data']['age'].toString());
+        sharedPreferences.setString("adresse", response['data']['adresse']);
+        sharedPreferences.setString("sexe", response['data']['sexe']);
+        sharedPreferences.setString("image", response['data']['image']);
         Navigator.of(context).pushReplacementNamed("home");
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -61,12 +65,12 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.only(top: 40),
                     child: Text(
                       "Welcome back to our App",
-                      style: TextStyle(color: Colors.blue, fontSize: 25),
+                      style: TextStyle(color: Color.fromARGB(255, 171, 243, 174), fontSize: 25),
                       textAlign: TextAlign.center,
                     ),
                   ),
                   Transform.scale(
-                    child: Image.asset("images/notes.jpg"),
+                    child: Image.asset("images/noteapp.jpg"),
                     scale: 0.8,
                   ),
                   Form(
@@ -74,12 +78,13 @@ class _LoginState extends State<Login> {
                     child: Column(
                       children: [
                         CustomTextField(
-                          valid: (val) => validInput(val!, 3, 20),
+                          valid: (val) => validInput(val!, 3, 60),
                           hint: "Enter Your Email",
                           controller: email,
                         ),
                         SizedBox(height: 20),
                         CustomTextField(
+                          obscureText: true,
                           hint: "Enter Your Password",
                           valid: (val) => validInput(val!, 3, 20),
                           controller: password,
@@ -93,7 +98,7 @@ class _LoginState extends State<Login> {
                             "Login",
                             style: TextStyle(fontSize: 20),
                           ),
-                          color: Colors.blue,
+                          color: Color.fromARGB(255, 171, 243, 174),
                           textColor: Colors.white,
                         ),
                         SizedBox(height: 10),

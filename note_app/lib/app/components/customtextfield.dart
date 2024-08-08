@@ -4,11 +4,14 @@ class CustomTextField extends StatelessWidget {
   final String hint;
   final TextEditingController controller;
   final String ?Function(String?)valid;
+  final bool obscureText;
+  final TextInputType? keyboardType;
+
 
   CustomTextField({
     super.key,
     required this.hint,
-    required this.controller, required this.valid,
+    required this.controller, required this.valid, this.obscureText=false, this.keyboardType=TextInputType.text,
   });
 
   @override
@@ -16,6 +19,8 @@ class CustomTextField extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 20),
       child: TextFormField(
+        obscureText:obscureText ,
+        keyboardType: keyboardType,
         validator: valid,
         controller: controller,
         decoration: InputDecoration(

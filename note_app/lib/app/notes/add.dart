@@ -23,30 +23,55 @@ class _AddState extends State<Add> {
   GlobalKey<FormState> formstate = GlobalKey();
   bool isLoading = false;
 
-  addNotes() async {
+  Future<void> addNotes() async {
     if (file == null) {
-      return ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Please select an image")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please select an image")),
+      );
+      return;
     }
     if (formstate.currentState!.validate()) {
-      isLoading = true;
-      setState(() {});
-      var reponse = await c.postRequestwithFile(
-          linkadd,
-          {
-            "title": title.text,
-            "content": content.text,
-            "id": sharedPreferences.getString("id") ?? "",
-          },
-          file!);
-      isLoading = false;
-      setState(() {});
-      if (reponse["status"] == 'success') {
+      setState(() {
+        isLoading = true;
+      });
+
+      var response = await c.postRequestwithFile(
+        linkadd,
+        {
+          "title": title.text,
+          "content": content.text,
+          "id": sharedPreferences.getString("id") ?? "",
+        },
+        file!,
+      );
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response["status"] == 'success') {
         Navigator.of(context)
             .pushNamedAndRemoveUntil("home", (context) => false);
       } else {
-        Navigator.of(context).pushNamed("addnote");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to add note")),
+        );
       }
+    }
+  }
+
+  Future<void> pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        file = File(image.path);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No image selected")),
+      );
     }
   }
 
@@ -58,7 +83,7 @@ class _AddState extends State<Add> {
         title: Text("Add Note"),
         centerTitle: true,
       ),
-      body: isLoading == true
+      body: isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
@@ -67,128 +92,88 @@ class _AddState extends State<Add> {
               child: Form(
                 key: formstate,
                 child: ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     Transform.scale(
                       scale: 1.2,
                       child: Image.asset("images/addnotes.png"),
                     ),
-                    Container(
-                      height: 50,
-                    ),
+                    SizedBox(height: 50),
                     CustomTextField(
-                        hint: "Enter Your Title",
-                        controller: title,
-                        valid: (val) {
-                          return validInput(val!, 1, 20);
-                        }),
-                    Container(
-                      height: 20,
+                      hint: "Enter Your Title",
+                      controller: title,
+                      valid: (val) {
+                        return validInput(val!, 1, 20);
+                      },
                     ),
+                    SizedBox(height: 20),
                     CustomTextField(
-                        hint: "Enter Your Content of the note ",
-                        controller: content,
-                        valid: (val) {
-                          return validInput(val!, 10, 200);
-                        }),
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: file == null ? Colors.blue : Colors.red,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: MaterialButton(
-                          child: Text(
-                            "Choose Image",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
+                      hint: "Enter Your Content of the note",
+                      controller: content,
+                      valid: (val) {
+                        return validInput(val!, 10, 200);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    MaterialButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => Container(
+                            height: 150,
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Please Choose Image",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red),
+                                ),
+                                SizedBox(height: 40),
+                                InkWell(
+                                  onTap: () async {
+                                    await pickImage();
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: double.infinity,
+                                    child: Text(
+                                      "From Gallery",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                              ],
+                            ),
                           ),
-                          onPressed: () {
-                            showModalBottomSheet(
-                                context: context,
-                                builder: (context) => Container(
-                                      height: 150,
-                                      width: double.infinity,
-                                      child: Column(
-                                        children: [
-                                          Text("Please Choose image",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.red)),
-                                          Container(
-                                            height: 20,
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              final ImagePicker picker =
-                                                  ImagePicker();
-// Pick an image.
-                                              final XFile? image =
-                                                  await picker.pickImage(
-                                                      source:
-                                                          ImageSource.gallery);
-                                              file = File(image!.path);
-                                              Navigator.of(context).pop();
-                                              setState(() {});
-                                            },
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              width: double.infinity,
-                                              child: Text(
-                                                "from Gallery",
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            height: 10,
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              final ImagePicker picker =
-                                                  ImagePicker();
-// Pick an image.
-                                              final XFile? image =
-                                                  await picker.pickImage(
-                                                      source:
-                                                          ImageSource.camera);
-                                              file = File(image!.path);
-                                              setState(() {});
-                                            },
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              width: double.infinity,
-                                              child: Text("from Camera",
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ));
-                          }),
+                        );
+                      },
+                      color: file == null ? Colors.blue : Colors.red,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Text(
+                        "Choose Image",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
                     ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20),
+                    SizedBox(height: 10),
+                    MaterialButton(
+                      onPressed: () async {
+                        await addNotes();
+                      },
+                      color: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      child: Text(
+                        "Submit",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
-                      child: MaterialButton(
-                        onPressed: () async {
-                          await addNotes();
-                        },
-                        child: Text(
-                          "Submit",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
-                      ),
-                    )
+                    ),
                   ],
                 ),
               ),

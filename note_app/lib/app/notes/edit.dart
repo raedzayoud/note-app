@@ -9,7 +9,7 @@ import 'package:note_app/constant/linkapi.dart';
 import 'package:note_app/main.dart';
 
 class Edit extends StatefulWidget {
-  final note;
+  final Map<String, dynamic>? note;
   const Edit({super.key, this.note});
 
   @override
@@ -28,15 +28,17 @@ class _EditState extends State<Edit> {
   void initState() {
     super.initState();
     if (widget.note != null) {
-      title.text = widget.note['notes_title'] ?? '';
-      content.text = widget.note['notes_content'] ?? '';
+      title.text = widget.note?['notes_title'] ?? '';
+      content.text = widget.note?['notes_content'] ?? '';
     }
   }
 
-  editNotes() async {
+  Future<void> editNotes() async {
     if (formstate.currentState!.validate()) {
-      isLoading = true;
-      setState(() {});
+      setState(() {
+        isLoading = true;
+      });
+
       var response;
       if (file == null) {
         response = await c.PostRequest(linkedit, {
@@ -58,20 +60,38 @@ class _EditState extends State<Edit> {
         );
       }
 
-      isLoading = false;
-      setState(() {});
+      setState(() {
+        isLoading = false;
+      });
+
       if (response["status"] == 'success') {
         Navigator.of(context)
             .pushNamedAndRemoveUntil("home", (context) => false);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("There is a problem")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("There is a problem")),
+        );
       }
+    }
+  }
+
+  Future<void> pickImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      setState(() {
+        file = File(image.path);
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("No image selected")),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Check if widget.note is null and show an appropriate message or widget if it is.
     if (widget.note == null) {
       return Scaffold(
         appBar: AppBar(
@@ -100,132 +120,106 @@ class _EditState extends State<Edit> {
               child: Form(
                 key: formstate,
                 child: ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
                   children: [
                     Transform.scale(
                       scale: 1.2,
                       child: Image.asset("images/addnotes.png"),
                     ),
-                    Container(
-                      height: 50,
-                    ),
+                    SizedBox(height: 50),
                     CustomTextField(
-                        hint: "title",
-                        controller: title,
-                        valid: (val) {
-                          return validInput(val!, 1, 20);
-                        }),
-                    Container(
-                      height: 20,
+                      hint: "Title",
+                      controller: title,
+                      valid: (val) {
+                        return validInput(val!, 1, 20);
+                      },
                     ),
+                    SizedBox(height: 20),
                     CustomTextField(
-                        hint: "content",
-                        controller: content,
-                        valid: (val) {
-                          return validInput(val!, 10, 200);
-                        }),
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: file == null ? Colors.blue : Colors.red,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: MaterialButton(
-                          child: Text(
-                            "Choose Image",
-                            style: TextStyle(color: Colors.white, fontSize: 20),
+                      hint: "Content",
+                      controller: content,
+                      valid: (val) {
+                        return validInput(val!, 10, 200);
+                      },
+                    ),
+                    SizedBox(height: 20),
+                    MaterialButton(
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => Container(
+                            height: 150,
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Please Choose Image",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red),
+                                ),
+                                SizedBox(height: 20),
+                                InkWell(
+                                  onTap: () async {
+                                    await pickImage(ImageSource.gallery);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: double.infinity,
+                                    child: Text(
+                                      "From Gallery",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 10),
+                                InkWell(
+                                  onTap: () async {
+                                    await pickImage(ImageSource.camera);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: double.infinity,
+                                    child: Text(
+                                      "From Camera",
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          onPressed: () {
-                            showModalBottomSheet(
-                                context: context,
-                                builder: (context) => Container(
-                                      height: 150,
-                                      width: double.infinity,
-                                      child: Column(
-                                        children: [
-                                          Text("Please Choose image",
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.red)),
-                                          Container(
-                                            height: 20,
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              final ImagePicker picker =
-                                                  ImagePicker();
-                                              // Pick an image.
-                                              final XFile? image =
-                                                  await picker.pickImage(
-                                                      source:
-                                                          ImageSource.gallery);
-                                              if (image != null) {
-                                                file = File(image.path);
-                                                Navigator.of(context).pop();
-                                                setState(() {});
-                                              }
-                                            },
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              width: double.infinity,
-                                              child: Text(
-                                                "from Gallery",
-                                                style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
-                                            ),
-                                          ),
-                                          Container(
-                                            height: 10,
-                                          ),
-                                          InkWell(
-                                            onTap: () async {
-                                              final ImagePicker picker =
-                                                  ImagePicker();
-                                              // Pick an image.
-                                              final XFile? image =
-                                                  await picker.pickImage(
-                                                      source:
-                                                          ImageSource.camera);
-                                              if (image != null) {
-                                                file = File(image.path);
-                                                setState(() {});
-                                              }
-                                            },
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              width: double.infinity,
-                                              child: Text("from Camera",
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w500)),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ));
-                          }),
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 20),
-                      decoration: BoxDecoration(
-                        color: Colors.blue,
+                        );
+                      },
+                      color: file == null ? Colors.blue : Colors.red,
+                      shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: MaterialButton(
-                        onPressed: () async {
-                          await editNotes();
-                        },
-                        child: Text(
-                          "Submit",
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        ),
+                      child: Text(
+                        "Choose Image",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
                       ),
-                    )
+                    ),
+                    SizedBox(height: 10),
+                    MaterialButton(
+                      onPressed: () async {
+                        await editNotes();
+                      },
+                      color: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        "Submit",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ),
                   ],
                 ),
               ),
