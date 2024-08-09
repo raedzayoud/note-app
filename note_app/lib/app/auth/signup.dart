@@ -41,6 +41,13 @@ class _SignupState extends State<Signup> {
         );
         return;
       }
+       var testresponse = await _c.PostRequest(linktestLogin, {
+        "email": email.text,
+      });
+      if (testresponse['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("This email is aleardy exists")));
+        return ;
+      }
       setState(() {
         isLoading = true;
       });

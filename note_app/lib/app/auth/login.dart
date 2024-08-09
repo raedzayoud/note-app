@@ -65,7 +65,9 @@ class _LoginState extends State<Login> {
                     padding: const EdgeInsets.only(top: 40),
                     child: Text(
                       "Welcome back to our App",
-                      style: TextStyle(color: Color.fromARGB(255, 171, 243, 174), fontSize: 25),
+                      style: TextStyle(
+                          color: Color.fromARGB(255, 171, 243, 174),
+                          fontSize: 25),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -106,7 +108,8 @@ class _LoginState extends State<Login> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 90, vertical: 10),
                           onPressed: () {
-                            Navigator.of(context).pushReplacementNamed("signup");
+                            Navigator.of(context)
+                                .pushReplacementNamed("signup");
                           },
                           child: Text(
                             "Sign Up",
