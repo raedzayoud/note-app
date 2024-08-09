@@ -120,7 +120,7 @@ class _AddState extends State<Add> {
                         showModalBottomSheet(
                           context: context,
                           builder: (context) => Container(
-                            height: 150,
+                            height: 120,
                             child: Column(
                               children: [
                                 Text(
@@ -130,7 +130,7 @@ class _AddState extends State<Add> {
                                       fontWeight: FontWeight.bold,
                                       color: Colors.red),
                                 ),
-                                SizedBox(height: 40),
+                                SizedBox(height: 20),
                                 InkWell(
                                   onTap: () async {
                                     await pickImage();
@@ -153,7 +153,7 @@ class _AddState extends State<Add> {
                           ),
                         );
                       },
-                      color: file == null ? Colors.blue : Colors.red,
+                      color: file == null ? Color.fromARGB(255, 104, 189, 108) : Colors.red,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       child: Text(
@@ -166,7 +166,7 @@ class _AddState extends State<Add> {
                       onPressed: () async {
                         await addNotes();
                       },
-                      color: Colors.blue,
+                      color: Color.fromARGB(255, 104, 189, 108),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20)),
                       child: Text(

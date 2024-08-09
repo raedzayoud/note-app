@@ -33,7 +33,7 @@ class _HomeprofileState extends State<Homeprofile> {
         leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.white,),onPressed: (){
           Navigator.of(context).pushReplacementNamed("home");
         },),
-        backgroundColor: Colors.blue,
+        backgroundColor: Color.fromARGB(255, 104, 189, 108),
         centerTitle: true,
         title: Text(
           "Profile",
@@ -44,6 +44,7 @@ class _HomeprofileState extends State<Homeprofile> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 5,),
             Center(
               child: CircleAvatar(
                 radius: 80,
@@ -54,7 +55,7 @@ class _HomeprofileState extends State<Homeprofile> {
                 onBackgroundImageError: (_, __) => const Icon(Icons.error),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             buildTextField("Full Name", fullnameController),
             buildTextField("Email", emailController),
             buildTextField("Adresse", adresseController),

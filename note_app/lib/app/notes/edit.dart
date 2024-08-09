@@ -197,7 +197,7 @@ class _EditState extends State<Edit> {
                           ),
                         );
                       },
-                      color: file == null ? Colors.blue : Colors.red,
+                      color: file == null ? Color.fromARGB(255, 104, 189, 108) : Colors.red,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -211,7 +211,7 @@ class _EditState extends State<Edit> {
                       onPressed: () async {
                         await editNotes();
                       },
-                      color: Colors.blue,
+                      color: Color.fromARGB(255, 104, 189, 108),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),

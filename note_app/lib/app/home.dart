@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue,
+        backgroundColor:Color.fromARGB(255, 104, 189, 108),
         title: Text(
           "Note App",
           style: TextStyle(color: Colors.white),
@@ -87,8 +87,8 @@ class _HomeState extends State<Home> {
                         "There are no notes",
                         style: TextStyle(
                           fontSize: 25,
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     );
